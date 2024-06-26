@@ -7,7 +7,7 @@ function Cadastro() {
         <div className={styles.cadastro_container}>
             <h1>Cadastrar Pessoa</h1>
             <p>Cadastrar dados e digital para ficar registrado</p>
-            <CadastroForm btnText="Cadastrar Digital"/>
+            <CadastroForm/>
         </div>
     )
 }
