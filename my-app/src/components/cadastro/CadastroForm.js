@@ -4,14 +4,14 @@ import Input from '../form/Input';
 import SubmitButton from '../form/SubmitButton';
 import styles from './CadastroForm.module.css';
 
-const ENDPOINT = "ws://localhost:4000"; // Porta do seu servidor WebSocket
+const ENDPOINT = "ws://localhost:3000"; // Porta do seu servidor WebSocket
 
 function CadastroForm() {
   const [formData, setFormData] = useState({
+    digital: '',
     nome: '',
     cpf: '',
-    contato: '',
-    digital: '',
+    contato: ''
   });
 
   useEffect(() => {
@@ -49,7 +49,7 @@ function CadastroForm() {
 
   const enviarDadosParaBackend = async () => {
     try {
-      const response = await fetch('/api/enviarDados', {
+      const response = await fetch('http://localhost:4000/api/insert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
