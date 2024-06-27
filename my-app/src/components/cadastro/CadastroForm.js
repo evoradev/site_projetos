@@ -1,43 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import socketIOClient from 'socket.io-client';
 import Input from '../form/Input';
 import SubmitButton from '../form/SubmitButton';
 import styles from './CadastroForm.module.css';
 
-const ENDPOINT = "ws://localhost:3000"; // Porta do seu servidor WebSocket
-
 function CadastroForm() {
   const [formData, setFormData] = useState({
-    digital: '',
+    Codigo: '',
     nome: '',
     cpf: '',
     contato: ''
   });
-
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on('digitalData', data => {
-      setFormData(prevState => ({
-        ...prevState,
-        digital: data.digital,
-      }));
-      socket.disconnect();
-    });
-
-    return () => socket.disconnect();
-  }, []);
-
-  const handleReceberDigital = () => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.emit('solicitarDigital');
-    socket.on('digitalData', data => {
-      setFormData(prevState => ({
-        ...prevState,
-        digital: data.digital,
-      }));
-      socket.disconnect();
-    });
-  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -70,6 +42,14 @@ function CadastroForm() {
 
   return (
     <form className={styles.form}>
+        <Input
+        type="text"
+        text="Codigo"
+        name="codigo"
+        placeholder="Insira o codigo:"
+        required
+        onChange={handleInputChange}
+      />
       <Input
         type="text"
         text="Nome"
@@ -94,15 +74,6 @@ function CadastroForm() {
         required
         onChange={handleInputChange}
       />
-      <Input
-        type="text"
-        text="Digital gerada"
-        name="digital"
-        placeholder="Insira a digital gerada"
-        value={formData.digital}
-        readOnly // A digital gerada será apenas visualizada
-      />
-      <SubmitButton text="Receber Digital" onClick={handleReceberDigital} />
       <SubmitButton text="Enviar" onClick={enviarDadosParaBackend} />
     </form>
   );
