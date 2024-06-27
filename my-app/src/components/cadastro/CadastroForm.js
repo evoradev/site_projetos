@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
 import Input from '../form/Input';
 import SubmitButton from '../form/SubmitButton';
 import styles from './CadastroForm.module.css';
 
-const ENDPOINT = "ws://localhost:3000";
+const ENDPOINT = "ws://localhost:4000"; // Porta do seu servidor WebSocket
 
 function CadastroForm() {
   const [formData, setFormData] = useState({
@@ -14,14 +14,27 @@ function CadastroForm() {
     digital: '',
   });
 
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.on('digitalData', data => {
+      setFormData(prevState => ({
+        ...prevState,
+        digital: data.digital,
+      }));
+      socket.disconnect();
+    });
+
+    return () => socket.disconnect();
+  }, []);
+
   const handleReceberDigital = () => {
     const socket = socketIOClient(ENDPOINT);
     socket.emit('solicitarDigital');
     socket.on('digitalData', data => {
-      setFormData({
-        ...formData,
-        digital: data,
-      });
+      setFormData(prevState => ({
+        ...prevState,
+        digital: data.digital,
+      }));
       socket.disconnect();
     });
   };
@@ -62,7 +75,7 @@ function CadastroForm() {
         text="Nome"
         name="nome"
         placeholder="Insira o seu nome:"
-        value={formData.nome}
+        required
         onChange={handleInputChange}
       />
       <Input
@@ -70,7 +83,7 @@ function CadastroForm() {
         text="CPF"
         name="cpf"
         placeholder="Insira o seu CPF"
-        value={formData.cpf}
+        required
         onChange={handleInputChange}
       />
       <Input
@@ -78,7 +91,7 @@ function CadastroForm() {
         text="Contato"
         name="contato"
         placeholder="Insira o contato"
-        value={formData.contato}
+        required
         onChange={handleInputChange}
       />
       <Input
@@ -87,7 +100,7 @@ function CadastroForm() {
         name="digital"
         placeholder="Insira a digital gerada"
         value={formData.digital}
-        onChange={handleInputChange}
+        readOnly // A digital gerada será apenas visualizada
       />
       <SubmitButton text="Receber Digital" onClick={handleReceberDigital} />
       <SubmitButton text="Enviar" onClick={enviarDadosParaBackend} />
